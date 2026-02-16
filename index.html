@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprechbausteine – Integrationskurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0F0F1A;
+  --bg-card: #1A1A2E;
+  --bg-card-hover: #22223A;
+  --card-bg: #1A1A2E;
+  --primary: #00D4FF;
+  --primary-light: rgba(0,212,255,0.08);
+  --accent-orange: #FF6B35;
+  --accent-green: #00E676;
+  --accent-purple: #B388FF;
+  --accent-pink: #FF4081;
+  --accent-teal: #1DE9B6;
+  --accent-yellow: #FFD740;
+  --accent-cyan: #00E5FF;
+  --text: #E8E8F0;
+  --text-light: #8888AA;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-hover: 0 8px 40px rgba(0,0,0,0.5);
+  --glow-blue: 0 0 20px rgba(0,212,255,0.15);
+  --glow-pink: 0 0 20px rgba(255,64,129,0.15);
+  --glow-green: 0 0 20px rgba(0,230,118,0.15);
+  --glow-purple: 0 0 20px rgba(179,136,255,0.15);
+  --radius: 16px;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse at 15% 10%, rgba(0,212,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 90%, rgba(179,136,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255,64,129,0.03) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Animated grid overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 60%);
+  border-radius: 50%;
+  z-index: 0;
+  animation: floatBlob 12s ease-in-out infinite alternate;
+}
+@keyframes floatBlob {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(-60px, 80px) scale(1.15); }
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 40px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 28px 16px 20px;
+  animation: fadeDown 0.5s ease;
+}
+.header h1 {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-shadow: 0 0 30px rgba(0,212,255,0.3);
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+
+}
+.header .subtitle {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Navigation breadcrumb */
+.breadcrumb {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease;
+}
+.breadcrumb.visible { display: flex; }
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-back:hover { background: rgba(0,212,255,0.08); border-color: var(--primary); box-shadow: var(--glow-blue); }
+.btn-back svg { width: 18px; height: 18px; }
+.breadcrumb-label {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* Main menu buttons */
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeUp 0.5s ease 0.15s both;
+}
+.menu-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.menu-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.menu-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+.menu-card:hover::before { opacity: 1; }
+.menu-card:active { transform: translateY(0); }
+.menu-card .icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 1.6rem;
+}
+.menu-card h2 {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.menu-card p {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+.card-gespraech .icon { background: rgba(0,212,255,0.12); }
+.card-gespraech:hover { border-color: var(--primary); box-shadow: var(--glow-blue), var(--shadow-hover); }
+.card-gespraech::before { background: linear-gradient(135deg, rgba(0,212,255,0.04), transparent); }
+.card-gespraech h2 { color: var(--primary); }
+.card-pruefung .icon { background: rgba(255,64,129,0.12); }
+.card-pruefung:hover { border-color: var(--accent-pink); box-shadow: var(--glow-pink), var(--shadow-hover); }
+.card-pruefung::before { background: linear-gradient(135deg, rgba(255,64,129,0.04), transparent); }
+.card-pruefung h2 { color: var(--accent-pink); }
+
+/* Sub-menu (Prüfung categories) */
+.sub-menu {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeUp 0.4s ease;
+}
+.sub-menu.visible { display: flex; }
+.sub-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.sub-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.sub-card .sub-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.sub-card h3 {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.sub-card p {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+.sub-bild .sub-icon { background: rgba(255,215,64,0.12); }
+.sub-bild:hover { border-color: var(--accent-yellow); box-shadow: 0 0 20px rgba(255,215,64,0.12), var(--shadow-hover); }
+.sub-bild h3 { color: var(--accent-yellow); }
+.sub-meinung .sub-icon { background: rgba(179,136,255,0.12); }
+.sub-meinung:hover { border-color: var(--accent-purple); box-shadow: var(--glow-purple), var(--shadow-hover); }
+.sub-meinung h3 { color: var(--accent-purple); }
+.sub-erfahrung .sub-icon { background: rgba(29,233,182,0.12); }
+.sub-erfahrung:hover { border-color: var(--accent-teal); box-shadow: 0 0 20px rgba(29,233,182,0.12), var(--shadow-hover); }
+.sub-erfahrung h3 { color: var(--accent-teal); }
+
+/* Content area */
+.content-area {
+  display: none;
+  animation: fadeUp 0.4s ease;
+}
+.content-area.visible { display: block; }
+
+.section-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-left: 4px;
+  color: var(--text);
+}
+
+/* Baustein cards */
+.baustein-group {
+  margin-bottom: 20px;
+}
+.baustein-group-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+.baustein {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  border-left: 3px solid;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.baustein:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  background: var(--bg-card-hover);
+}
+.baustein.copied {
+  background: rgba(0,230,118,0.08);
+}
+.baustein .phrase {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 2px;
+}
+.baustein .example {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-style: italic;
+  line-height: 1.4;
+}
+.baustein .copy-hint {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.72rem;
+  color: #555;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.baustein:hover .copy-hint { opacity: 1; color: var(--text-light); }
+.baustein.copied .copy-hint {
+  opacity: 1;
+  color: var(--accent-green);
+  font-weight: 700;
+}
+
+/* Color coding with glow */
+.baustein.color-blue { border-left-color: var(--primary); }
+.baustein.color-blue:hover { box-shadow: 0 0 15px rgba(0,212,255,0.1), 0 4px 20px rgba(0,0,0,0.4); }
+.baustein.color-orange { border-left-color: var(--accent-orange); }
+.baustein.color-orange:hover { box-shadow: 0 0 15px rgba(255,107,53,0.1), 0 4px 20px rgba(0,0,0,0.4); }
+.baustein.color-green { border-left-color: var(--accent-green); }
+.baustein.color-green:hover { box-shadow: 0 0 15px rgba(0,230,118,0.1), 0 4px 20px rgba(0,0,0,0.4); }
+.baustein.color-purple { border-left-color: var(--accent-purple); }
+.baustein.color-purple:hover { box-shadow: 0 0 15px rgba(179,136,255,0.1), 0 4px 20px rgba(0,0,0,0.4); }
+.baustein.color-pink { border-left-color: var(--accent-pink); }
+.baustein.color-pink:hover { box-shadow: 0 0 15px rgba(255,64,129,0.1), 0 4px 20px rgba(0,0,0,0.4); }
+.baustein.color-teal { border-left-color: var(--accent-teal); }
+.baustein.color-teal:hover { box-shadow: 0 0 15px rgba(29,233,182,0.1), 0 4px 20px rgba(0,0,0,0.4); }
+
+/* Positive / Negative toggle */
+.toggle-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--bg-card);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.toggle-btn.active-pos {
+  background: rgba(0,230,118,0.1);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+  box-shadow: 0 0 15px rgba(0,230,118,0.1);
+}
+.toggle-btn.active-neg {
+  background: rgba(255,64,129,0.1);
+  border-color: var(--accent-pink);
+  color: var(--accent-pink);
+  box-shadow: 0 0 15px rgba(255,64,129,0.1);
+}
+
+/* Tip box */
+.tip-box {
+  background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(179,136,255,0.06));
+  border: 1px solid rgba(0,212,255,0.12);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-top: 20px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-light);
+}
+.tip-box strong {
+  color: var(--primary);
+}
+
+/* Animations */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .header h1 { font-size: 1.3rem; }
+  .menu-card { padding: 22px 18px; }
+  .baustein { padding: 14px 15px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>🗣️ Sprechbausteine</h1>
+    <p class="subtitle">Hilfe für mündliche Prüfung & Gespräche</p>
+  </div>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb" id="breadcrumb">
+    <button class="btn-back" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Zurück
+    </button>
+    <span class="breadcrumb-label" id="breadcrumb-label"></span>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div class="main-menu" id="mainMenu">
+    <div class="menu-card card-gespraech" onclick="showGespraech()">
+      <div class="icon">💬</div>
+      <h2>Gesprächsbausteine</h2>
+      <p>Nützliche Sätze für ein Gespräch mit dem/der Partner*in</p>
+    </div>
+    <div class="menu-card card-pruefung" onclick="showPruefungMenu()">
+      <div class="icon">📋</div>
+      <h2>Prüfungsbausteine</h2>
+      <p>Bildbeschreibung, Meinungsäußerung &amp; Eigene Erfahrung</p>
+    </div>
+  </div>
+
+  <!-- PRÜFUNG SUB-MENU -->
+  <div class="sub-menu" id="pruefungMenu">
+    <div class="sub-card sub-bild" onclick="showBild()">
+      <div class="sub-icon">🖼️</div>
+      <div>
+        <h3>Bildbeschreibung</h3>
+        <p>Das Bild beschreiben: Was sehe ich?</p>
+      </div>
+    </div>
+    <div class="sub-card sub-meinung" onclick="showMeinung()">
+      <div class="sub-icon">💭</div>
+      <div>
+        <h3>Meinungsäußerung</h3>
+        <p>Positiv &amp; negativ – Meinung sagen</p>
+      </div>
+    </div>
+    <div class="sub-card sub-erfahrung" onclick="showErfahrung()">
+      <div class="sub-icon">📖</div>
+      <div>
+        <h3>Eigene Erfahrung</h3>
+        <p>Über eigene Erfahrungen sprechen</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT: Gesprächsbausteine -->
+  <div class="content-area" id="contentGespraech">
+    <div class="section-title">💬 Gesprächsbausteine</div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Gespräch beginnen</div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Hallo! Ich bin … Und wie heißt du?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Sollen wir anfangen?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Unser Thema ist … Was denkst du darüber?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Vorschläge machen</div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Ich schlage vor, dass wir …</div>
+        <div class="example">z.B. „Ich schlage vor, dass wir am Samstag kochen."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Wir könnten vielleicht …</div>
+        <div class="example">z.B. „Wir könnten vielleicht zusammen einkaufen gehen."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Was hältst du davon, wenn wir …?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Hast du eine Idee?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Zustimmen</div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">Ja, das ist eine gute Idee!</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">Da hast du recht.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">Das finde ich auch.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">Einverstanden! Das machen wir so.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Ablehnen / Widersprechen</div>
+      <div class="baustein color-pink" onclick="copyBaustein(this)">
+        <div class="phrase">Das sehe ich anders.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-pink" onclick="copyBaustein(this)">
+        <div class="phrase">Ich bin nicht sicher, ob das eine gute Idee ist.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-pink" onclick="copyBaustein(this)">
+        <div class="phrase">Ich verstehe dich, aber ich denke, dass …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-pink" onclick="copyBaustein(this)">
+        <div class="phrase">Nein, das passt leider nicht, weil …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Nachfragen</div>
+      <div class="baustein color-teal" onclick="copyBaustein(this)">
+        <div class="phrase">Kannst du das bitte noch einmal erklären?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-teal" onclick="copyBaustein(this)">
+        <div class="phrase">Was meinst du genau?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-teal" onclick="copyBaustein(this)">
+        <div class="phrase">Wie meinst du das?</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Gespräch beenden</div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Dann sind wir uns einig.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Gut, dann machen wir das so!</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Vielen Dank für das Gespräch!</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT: Bildbeschreibung -->
+  <div class="content-area" id="contentBild">
+    <div class="section-title">🖼️ Bildbeschreibung</div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Was sehe ich?</div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Auf dem Bild sehe ich …</div>
+        <div class="example">z.B. „Auf dem Bild sehe ich eine Familie im Park."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Das Bild zeigt …</div>
+        <div class="example">z.B. „Das Bild zeigt einen Mann, der am Computer arbeitet."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Im Vordergrund / Im Hintergrund sieht man …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Links / Rechts / In der Mitte ist …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Personen beschreiben</div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Die Person / Die Personen sieht/sehen … aus.</div>
+        <div class="example">z.B. „Die Person sieht glücklich aus."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Ich glaube, die Person ist …</div>
+        <div class="example">z.B. „Ich glaube, die Person ist eine Ärztin."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Die Person trägt …</div>
+        <div class="example">z.B. „Die Person trägt eine Uniform."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Ort & Situation</div>
+      <div class="baustein color-teal" onclick="copyBaustein(this)">
+        <div class="phrase">Die Situation spielt sich … ab.</div>
+        <div class="example">z.B. „Die Situation spielt sich in einem Büro ab."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-teal" onclick="copyBaustein(this)">
+        <div class="phrase">Ich denke, das ist …</div>
+        <div class="example">z.B. „Ich denke, das ist ein Supermarkt."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-teal" onclick="copyBaustein(this)">
+        <div class="phrase">Es sieht so aus, als ob …</div>
+        <div class="example">z.B. „Es sieht so aus, als ob die Leute ein Fest feiern."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Thema benennen</div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Das Thema des Bildes ist …</div>
+        <div class="example">z.B. „Das Thema des Bildes ist Gesundheit / Sport / Familie."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Bei dem Bild geht es um …</div>
+        <div class="example">z.B. „Bei dem Bild geht es um Ernährung."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>💡 Tipp:</strong> Beschreibe das Bild systematisch: erst das Thema nennen, dann die Personen, den Ort und die Details. Benutze Vermutungen wie „Ich denke …" oder „Es sieht so aus, als ob …"
+    </div>
+  </div>
+
+  <!-- CONTENT: Meinungsäußerung -->
+  <div class="content-area" id="contentMeinung">
+    <div class="section-title">💭 Meinungsäußerung</div>
+
+    <div class="toggle-row">
+      <button class="toggle-btn active-pos" id="togglePos" onclick="showPositiv()">👍 Positiv</button>
+      <button class="toggle-btn" id="toggleNeg" onclick="showNegativ()">👎 Negativ</button>
+    </div>
+
+    <!-- Positiv -->
+    <div id="meinungPositiv">
+      <div class="baustein-group">
+        <div class="baustein-group-title">Positive Meinung</div>
+        <div class="baustein color-green" onclick="copyBaustein(this)">
+          <div class="phrase">Ich finde das sehr gut, weil …</div>
+          <div class="example">z.B. „Ich finde das sehr gut, weil man gesund bleibt."</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-green" onclick="copyBaustein(this)">
+          <div class="phrase">Ich bin der Meinung, dass … wichtig ist.</div>
+          <div class="example">z.B. „Ich bin der Meinung, dass Sport wichtig ist."</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-green" onclick="copyBaustein(this)">
+          <div class="phrase">Meiner Meinung nach ist … sehr sinnvoll.</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-green" onclick="copyBaustein(this)">
+          <div class="phrase">Ein Vorteil ist, dass …</div>
+          <div class="example">z.B. „Ein Vorteil ist, dass man neue Leute kennenlernt."</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-green" onclick="copyBaustein(this)">
+          <div class="phrase">Das Gute daran ist, dass …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-green" onclick="copyBaustein(this)">
+          <div class="phrase">Ich halte … für sehr wichtig / positiv.</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+      </div>
+
+      <div class="baustein-group">
+        <div class="baustein-group-title">Begründung</div>
+        <div class="baustein color-teal" onclick="copyBaustein(this)">
+          <div class="phrase">Der Grund dafür ist, dass …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-teal" onclick="copyBaustein(this)">
+          <div class="phrase">Das ist positiv, weil …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-teal" onclick="copyBaustein(this)">
+          <div class="phrase">Zum Beispiel …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Negativ -->
+    <div id="meinungNegativ" style="display:none;">
+      <div class="baustein-group">
+        <div class="baustein-group-title">Negative Meinung</div>
+        <div class="baustein color-pink" onclick="copyBaustein(this)">
+          <div class="phrase">Ich finde das nicht so gut, weil …</div>
+          <div class="example">z.B. „Ich finde das nicht so gut, weil es teuer ist."</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-pink" onclick="copyBaustein(this)">
+          <div class="phrase">Ich bin der Meinung, dass … ein Problem ist.</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-pink" onclick="copyBaustein(this)">
+          <div class="phrase">Meiner Meinung nach ist … nicht sinnvoll.</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-pink" onclick="copyBaustein(this)">
+          <div class="phrase">Ein Nachteil ist, dass …</div>
+          <div class="example">z.B. „Ein Nachteil ist, dass man wenig Zeit hat."</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-pink" onclick="copyBaustein(this)">
+          <div class="phrase">Das Problem dabei ist, dass …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-pink" onclick="copyBaustein(this)">
+          <div class="phrase">Ich halte … für problematisch / negativ.</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+      </div>
+
+      <div class="baustein-group">
+        <div class="baustein-group-title">Begründung</div>
+        <div class="baustein color-purple" onclick="copyBaustein(this)">
+          <div class="phrase">Der Grund dafür ist, dass …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-purple" onclick="copyBaustein(this)">
+          <div class="phrase">Das ist negativ, weil …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+        <div class="baustein color-purple" onclick="copyBaustein(this)">
+          <div class="phrase">Ein Beispiel dafür ist …</div>
+          <span class="copy-hint">📋 Kopiert!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>💡 Tipp:</strong> Sage immer zuerst deine Meinung, dann nenne einen Grund und dann ein Beispiel. So ist deine Antwort strukturiert und klar!
+    </div>
+  </div>
+
+  <!-- CONTENT: Eigene Erfahrung -->
+  <div class="content-area" id="contentErfahrung">
+    <div class="section-title">📖 Eigene Erfahrung</div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Einleitung</div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">Ich habe persönliche Erfahrung mit diesem Thema.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">Ich kenne das aus eigener Erfahrung.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-green" onclick="copyBaustein(this)">
+        <div class="phrase">In meinem Heimatland / In meiner Familie …</div>
+        <div class="example">z.B. „In meinem Heimatland ist das ganz anders."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Erfahrung erzählen</div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Ich habe einmal erlebt, dass …</div>
+        <div class="example">z.B. „Ich habe einmal erlebt, dass mein Nachbar mir geholfen hat."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Als ich … war, habe ich …</div>
+        <div class="example">z.B. „Als ich in der Schule war, habe ich viel Sport gemacht."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Früher habe ich … , aber jetzt …</div>
+        <div class="example">z.B. „Früher habe ich nicht gern gelesen, aber jetzt lese ich viel."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-blue" onclick="copyBaustein(this)">
+        <div class="phrase">Ich erinnere mich, dass …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Vergleich Heimatland / Deutschland</div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">In meinem Heimatland ist es so, dass …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">In Deutschland ist das anders, weil …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Der Unterschied ist, dass …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-purple" onclick="copyBaustein(this)">
+        <div class="phrase">Das ist ähnlich wie in meinem Heimatland.</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="baustein-group">
+      <div class="baustein-group-title">Wunsch / Zukunft</div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">In Zukunft möchte ich …</div>
+        <div class="example">z.B. „In Zukunft möchte ich mehr Sport treiben."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Ich wünsche mir, dass …</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+      <div class="baustein color-orange" onclick="copyBaustein(this)">
+        <div class="phrase">Es wäre schön, wenn …</div>
+        <div class="example">z.B. „Es wäre schön, wenn alle Menschen gleich behandelt werden."</div>
+        <span class="copy-hint">📋 Kopiert!</span>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>💡 Tipp:</strong> Erzähle eine kurze Geschichte oder ein konkretes Beispiel aus deinem Leben. Vergleiche dann mit Deutschland. Das macht deine Antwort interessant und persönlich!
+    </div>
+  </div>
+</div>
+
+<script>
+// Goatcounter
+(function() {
+  var script = document.createElement('script');
+  script.async = true;
+  script.src = '//gc.zgo.at/count.js';
+  script.dataset.goatcounter = 'https://aguitoo.goatcounter.com/count';
+  document.head.appendChild(script);
+})();
+
+// Navigation state
+let currentView = 'main';
+let previousView = 'main';
+
+function hideAll() {
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('pruefungMenu').classList.remove('visible');
+  document.querySelectorAll('.content-area').forEach(el => el.classList.remove('visible'));
+}
+
+function showMain() {
+  hideAll();
+  document.getElementById('mainMenu').style.display = 'flex';
+  document.getElementById('breadcrumb').classList.remove('visible');
+  currentView = 'main';
+}
+
+function showPruefungMenu() {
+  hideAll();
+  document.getElementById('pruefungMenu').classList.add('visible');
+  document.getElementById('breadcrumb').classList.add('visible');
+  document.getElementById('breadcrumb-label').textContent = '› Prüfungsbausteine';
+  previousView = 'main';
+  currentView = 'pruefung';
+}
+
+function showGespraech() {
+  hideAll();
+  document.getElementById('contentGespraech').classList.add('visible');
+  document.getElementById('breadcrumb').classList.add('visible');
+  document.getElementById('breadcrumb-label').textContent = '› Gesprächsbausteine';
+  previousView = 'main';
+  currentView = 'gespraech';
+}
+
+function showBild() {
+  hideAll();
+  document.getElementById('contentBild').classList.add('visible');
+  document.getElementById('breadcrumb').classList.add('visible');
+  document.getElementById('breadcrumb-label').textContent = '› Bildbeschreibung';
+  previousView = 'pruefung';
+  currentView = 'bild';
+}
+
+function showMeinung() {
+  hideAll();
+  document.getElementById('contentMeinung').classList.add('visible');
+  document.getElementById('breadcrumb').classList.add('visible');
+  document.getElementById('breadcrumb-label').textContent = '› Meinungsäußerung';
+  previousView = 'pruefung';
+  currentView = 'meinung';
+}
+
+function showErfahrung() {
+  hideAll();
+  document.getElementById('contentErfahrung').classList.add('visible');
+  document.getElementById('breadcrumb').classList.add('visible');
+  document.getElementById('breadcrumb-label').textContent = '› Eigene Erfahrung';
+  previousView = 'pruefung';
+  currentView = 'erfahrung';
+}
+
+function goBack() {
+  if (previousView === 'main') {
+    showMain();
+  } else if (previousView === 'pruefung') {
+    showPruefungMenu();
+  }
+}
+
+// Positiv / Negativ toggle
+function showPositiv() {
+  document.getElementById('meinungPositiv').style.display = 'block';
+  document.getElementById('meinungNegativ').style.display = 'none';
+  document.getElementById('togglePos').className = 'toggle-btn active-pos';
+  document.getElementById('toggleNeg').className = 'toggle-btn';
+}
+
+function showNegativ() {
+  document.getElementById('meinungPositiv').style.display = 'none';
+  document.getElementById('meinungNegativ').style.display = 'block';
+  document.getElementById('toggleNeg').className = 'toggle-btn active-neg';
+  document.getElementById('togglePos').className = 'toggle-btn';
+}
+
+// Copy baustein text
+function copyBaustein(el) {
+  const phrase = el.querySelector('.phrase').textContent;
+  navigator.clipboard.writeText(phrase).then(() => {
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 1200);
+  }).catch(() => {
+    // fallback
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 1200);
+  });
+}
+</script>
+
+</body>
+</html>
